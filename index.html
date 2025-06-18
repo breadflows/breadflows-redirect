@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Breadflow?!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       margin: 0;
@@ -11,16 +12,68 @@
       color: #0f0;
       overflow: hidden;
     }
+    .intro {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 10;
+    }
+    .swirl {
+      width: 40vw;
+      height: 40vw;
+      max-width: 200px;
+      max-height: 200px;
+      border-radius: 50%;
+      background: conic-gradient(#0f0, #000, #0f0);
+      animation: spin 5s linear infinite;
+      margin: 0 auto;
+      position: relative;
+    }
+    .swirl-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      /* keep the translate to center the button */
+      transform: translate(-50%, -50%) rotate(0deg);
+      width: 15vw;
+      height: 15vw;
+      max-width: 60px;
+      max-height: 60px;
+      border-radius: 50%;
+      background: #000;
+      color: #0f0;
+      font-weight: bold;
+      border: 2px solid #0f0;
+      cursor: pointer;
+      z-index: 2;
+      animation: spin-reverse 5s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes spin-reverse {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(-360deg); }
+    }
+    .hidden { display: none; }
     .container {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       text-align: center;
+      z-index: 1;
+      width: 90vw;
+      max-width: 500px;
     }
     .robot {
-      width: 150px;
-      height: 150px;
+      width: 35vw;
+      max-width: 150px;
+      height: 35vw;
+      max-height: 150px;
       border-radius: 50%;
       background: #0f0;
       border: 5px solid #030;
@@ -29,23 +82,25 @@
       animation: float 2s ease-in-out infinite;
     }
     .eye {
-      width: 25px;
-      height: 25px;
+      width: 6vw;
+      max-width: 25px;
+      height: 6vw;
+      max-height: 25px;
       background: #000;
       border-radius: 50%;
       position: absolute;
-      top: 40px;
+      top: 25%;
       animation: blink 3s infinite;
     }
-    .eye.left { left: 35px; }
-    .eye.right { right: 35px; }
+    .eye.left { left: 20%; }
+    .eye.right { right: 20%; }
     @keyframes blink {
       0%, 90%, 100% { transform: scaleY(1); }
       95% { transform: scaleY(0.1); }
     }
     @keyframes float {
-      0%, 100% { transform: translate(-50%, -55%) scale(1); }
-      50% { transform: translate(-50%, -65%) scale(1.05); }
+      0%, 100% { transform: translateY(0%) scale(1); }
+      50% { transform: translateY(-10%) scale(1.05); }
     }
     .speech {
       font-size: 1.2em;
@@ -72,7 +127,13 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="intro" id="intro">
+    <div class="swirl">
+      <button class="swirl-button" id="startBtn">GO</button>
+    </div>
+  </div>
+
+  <div class="container hidden" id="mainContent">
     <div class="robot">
       <div class="eye left"></div>
       <div class="eye right"></div>
@@ -80,41 +141,55 @@
     <div class="speech" id="speech">Hi! Looks like you've landed on <strong>breadflow.com</strong>.</div>
     <div class="countdown" id="countdown">Redirecting to breadflows.com in 10...</div>
     <div class="contact">
-      Not what you meant? You can inquire about buying this site by contacting:<br>
+      Not what you meant? You can inquire about buying this site by contacting:<br />
       <strong>contact@breadflows.com</strong>
     </div>
   </div>
 
-  <!-- Background audio -->
-  <audio autoplay loop>
-    <source src="0618.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+  <audio id="audio" src="0618.mp3" preload="auto"></audio>
 
   <script>
+    const audio = document.getElementById('audio');
+
+    const startBtn = document.getElementById('startBtn');
+    const intro = document.getElementById('intro');
+    const mainContent = document.getElementById('mainContent');
+
+    startBtn.addEventListener('click', () => {
+      audio.play();
+      intro.classList.add('hidden');
+      mainContent.classList.remove('hidden');
+      startCountdown();
+    });
+
     let count = 10;
     const countdownEl = document.getElementById('countdown');
     const speechEl = document.getElementById('speech');
     const phrases = [
-      "Beep boop 🥖", 
+      "Beep boop 🥖",
       "This isn’t the loaf you’re looking for...",
-      "Analyzing breadcrumb trail...", 
+      "Analyzing breadcrumb trail...",
       "Yeast detected... rerouting..."
     ];
     let phraseIndex = 0;
 
-    function updateCountdown() {
-      count--;
-      if (count > 0) {
-        countdownEl.textContent = `Redirecting to breadflows.com in ${count}...`;
-        speechEl.textContent = phrases[phraseIndex % phrases.length];
-        phraseIndex++;
-      } else {
-        window.location.href = 'https://breadflows.com';
-      }
-    }
+    function startCountdown() {
+      countdownEl.textContent = `Redirecting to breadflows.com in ${count}...`;
+      speechEl.textContent = phrases[phraseIndex % phrases.length];
+      phraseIndex++;
 
-    setInterval(updateCountdown, 1000);
+      const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countdownEl.textContent = `Redirecting to breadflows.com in ${count}...`;
+          speechEl.textContent = phrases[phraseIndex % phrases.length];
+          phraseIndex++;
+        } else {
+          clearInterval(interval);
+          window.location.href = 'https://breadflows.com';
+        }
+      }, 1000);
+    }
   </script>
 </body>
 </html>
