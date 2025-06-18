@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Breadflow?!</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: 'Courier New', monospace;
+      color: #0f0;
+      overflow: hidden;
+    }
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .robot {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: #0f0;
+      border: 5px solid #030;
+      position: relative;
+      margin: 0 auto 20px;
+      animation: float 2s ease-in-out infinite;
+    }
+    .eye {
+      width: 25px;
+      height: 25px;
+      background: #000;
+      border-radius: 50%;
+      position: absolute;
+      top: 40px;
+      animation: blink 3s infinite;
+    }
+    .eye.left { left: 35px; }
+    .eye.right { right: 35px; }
+    @keyframes blink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.1); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -55%) scale(1); }
+      50% { transform: translate(-50%, -65%) scale(1.05); }
+    }
+    .speech {
+      font-size: 1.2em;
+      background: rgba(0,255,0,0.1);
+      display: inline-block;
+      padding: 10px 20px;
+      border: 2px solid #0f0;
+      border-radius: 20px;
+      margin-top: 10px;
+    }
+    .countdown {
+      font-size: 2em;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .contact {
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #0f0;
+    }
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="robot">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+    </div>
+    <div class="speech" id="speech">Hi! Looks like you've landed on <strong>breadflow.com</strong>.</div>
+    <div class="countdown" id="countdown">Redirecting to breadflows.com in 10...</div>
+    <div class="contact">
+      Not what you meant? You can inquire about buying this site by contacting:<br>
+      <strong>contact@breadflows.com</strong>
+    </div>
+  </div>
+
+  <!-- Background audio -->
+  <audio autoplay loop>
+    <source src="0618.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    let count = 10;
+    const countdownEl = document.getElementById('countdown');
+    const speechEl = document.getElementById('speech');
+    const phrases = [
+      "Beep boop 🥖", 
+      "This isn’t the loaf you’re looking for...",
+      "Analyzing breadcrumb trail...", 
+      "Yeast detected... rerouting..."
+    ];
+    let phraseIndex = 0;
+
+    function updateCountdown() {
+      count--;
+      if (count > 0) {
+        countdownEl.textContent = `Redirecting to breadflows.com in ${count}...`;
+        speechEl.textContent = phrases[phraseIndex % phrases.length];
+        phraseIndex++;
+      } else {
+        window.location.href = 'https://breadflows.com';
+      }
+    }
+
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
